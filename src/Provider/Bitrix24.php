@@ -12,6 +12,8 @@ class Bitrix24 extends AbstractProvider
 {
     use BearerAuthorizationTrait;
 
+    const ACCESS_TOKEN_RESOURCE_OWNER_ID = 'user_id';
+
     /**
      * Domain
      *
