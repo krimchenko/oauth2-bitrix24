@@ -61,9 +61,41 @@ class Bitrix24 extends AbstractProvider
      */
     protected function fetchResourceOwnerDetails(AccessToken $token)
     {
-        $response = parent::fetchResourceOwnerDetails($token);
+        $authUrl = $this->domain . '/oauth/token/';
+        $authUrl .= '?grant_type=authorization_code';
+        $authUrl .= '&client_id=' . $this->clientId;
+        $authUrl .= '&client_secret=' . $this->clientSecret;
+        $authUrl .= '&code=' . $token;
 
-        return isset($response['result']) ? $response['result'] : null;
+        $factory = $this->getRequestFactory();
+        $request = $factory->getRequestWithOptions(self::METHOD_GET, $authUrl);
+        $authResponse = $this->getParsedResponse($request);
+
+        if (false === is_array($authResponse)) {
+            throw new UnexpectedValueException(
+                'Invalid response received from Authorization Server. Expected JSON.'
+            );
+        }
+
+        if(empty($authResponse['access_token'])) {
+            throw new UnexpectedValueException(
+                'Invalid response received from Authorization Server.'
+            );
+        }
+
+        $url = $this->getResourceOwnerDetailsUrl($token);
+        $url .= '?auth=' . $authResponse['access_token'];
+
+        $request = $factory->getRequestWithOptions(self::METHOD_GET, $url);
+        $userResponse = $this->getParsedResponse($request);
+
+        if (false === is_array($userResponse)) {
+            throw new UnexpectedValueException(
+                'Invalid response received from Authorization Server. Expected JSON.'
+            );
+        }
+
+        return isset($userResponse['result']) ? $userResponse['result'] : null;
     }
 
     /**
