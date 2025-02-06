@@ -1,5 +1,5 @@
 {
-    "name": "batiscaff/oauth2-bitrix24",
+    "name": "krimchenko/oauth2-bitrix24",
     "description": "Bitrix24 OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
     "license": "MIT",
     "authors": [
